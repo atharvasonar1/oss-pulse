@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+psycopg2-binary
+sqlalchemy
+alembic
+apscheduler
+requests
+spacy
+scikit-learn
+xgboost
+shap
+pytest
+python-dotenv

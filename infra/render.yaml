@@ -1,0 +1,2 @@
+# Render deployment shell config for OSS Pulse.
+# TODO: define web service, worker, environment variables, and build/start commands.
