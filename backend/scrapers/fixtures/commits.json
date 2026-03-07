@@ -1,0 +1,44 @@
+[
+  {
+    "sha": "1f2e3d4c5b6a79800112233445566778899aabbc",
+    "commit": {
+      "author": {
+        "name": "Core Maintainer",
+        "email": "core@example.com",
+        "date": "2026-02-24T14:15:22Z"
+      },
+      "message": "Improve scheduler stability"
+    },
+    "author": {
+      "login": "core-maintainer"
+    }
+  },
+  {
+    "sha": "2a3b4c5d6e7f8900112233445566778899aabbcc",
+    "commit": {
+      "author": {
+        "name": "Infra Contributor",
+        "email": "infra@example.com",
+        "date": "2026-02-21T09:42:10Z"
+      },
+      "message": "Refactor ingestion retry handling"
+    },
+    "author": {
+      "login": "infra-contributor"
+    }
+  },
+  {
+    "sha": "3b4c5d6e7f890112233445566778899aabbccdde",
+    "commit": {
+      "author": {
+        "name": "Newcomer Dev",
+        "email": "newcomer@example.com",
+        "date": "2026-02-18T18:03:44Z"
+      },
+      "message": "Add release metadata parsing"
+    },
+    "author": {
+      "login": "newcomer-dev"
+    }
+  }
+]

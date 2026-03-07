@@ -1,0 +1,41 @@
+[
+  {
+    "total": 128,
+    "author": {
+      "login": "core-maintainer",
+      "id": 101,
+      "html_url": "https://github.com/core-maintainer"
+    },
+    "weeks": [
+      {"w": 1705276800, "a": 1240, "d": 180, "c": 16},
+      {"w": 1705881600, "a": 980, "d": 120, "c": 13},
+      {"w": 1706486400, "a": 1110, "d": 140, "c": 15}
+    ]
+  },
+  {
+    "total": 74,
+    "author": {
+      "login": "infra-contributor",
+      "id": 202,
+      "html_url": "https://github.com/infra-contributor"
+    },
+    "weeks": [
+      {"w": 1705276800, "a": 660, "d": 95, "c": 10},
+      {"w": 1705881600, "a": 720, "d": 88, "c": 11},
+      {"w": 1706486400, "a": 590, "d": 70, "c": 9}
+    ]
+  },
+  {
+    "total": 51,
+    "author": {
+      "login": "newcomer-dev",
+      "id": 303,
+      "html_url": "https://github.com/newcomer-dev"
+    },
+    "weeks": [
+      {"w": 1705276800, "a": 300, "d": 42, "c": 6},
+      {"w": 1705881600, "a": 355, "d": 30, "c": 7},
+      {"w": 1706486400, "a": 290, "d": 34, "c": 5}
+    ]
+  }
+]
