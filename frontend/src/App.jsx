@@ -1,9 +1,26 @@
+import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import Overview from "./pages/Overview";
 import ProjectDetail from "./pages/ProjectDetail";
 
+function formatUtcTimestamp(date) {
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
+    return "UTC --";
+  }
+  return `UTC ${date.toISOString().slice(0, 16).replace("T", " ")}`;
+}
+
 export default function App() {
+  const [utcNow, setUtcNow] = useState(() => formatUtcTimestamp(new Date()));
+
+  useEffect(() => {
+    const tick = () => setUtcNow(formatUtcTimestamp(new Date()));
+    tick();
+    const intervalId = setInterval(tick, 60_000);
+    return () => clearInterval(intervalId);
+  }, []);
+
   return (
     <BrowserRouter>
       <div className="min-h-screen bg-[radial-gradient(circle_at_20%_0%,rgba(30,41,59,0.45),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(15,23,42,0.8),transparent_55%),#080c14]">
@@ -17,8 +34,9 @@ export default function App() {
               </div>
             </div>
             <div className="inline-flex items-center gap-2 rounded-full border border-risk-green/40 bg-risk-green/10 px-3 py-1 text-xs text-risk-green">
-              <span className="h-2 w-2 rounded-full bg-risk-green" />
-              Live
+              <span data-testid="live-indicator-dot" className="h-2 w-2 animate-pulse rounded-full bg-risk-green" />
+              <span>Live</span>
+              <span className="text-[10px] text-slate-300">{utcNow}</span>
             </div>
           </div>
         </header>
