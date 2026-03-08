@@ -10,9 +10,10 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from backend.api.schemas import ErrorResponse, ProjectSchema, SuccessResponse
+from backend.api.schemas import ErrorResponse, ProjectSchema, RiskScoreSchema, SuccessResponse
 from backend.db.models import Project
 from backend.db.session import get_session
+from backend.ml.scorer import score_project
 from backend.pipeline.scheduler import trigger_now
 
 
@@ -63,3 +64,25 @@ def get_project(project_id: int, db: Session = Depends(get_db)) -> SuccessRespon
 def trigger_pipeline() -> SuccessResponse[dict[str, object]]:
     projects_processed = trigger_now()
     return SuccessResponse(data={"message": "Pipeline triggered", "projects_processed": projects_processed})
+
+
+@app.get(
+    "/projects/{project_id}/risk-score",
+    response_model=SuccessResponse[RiskScoreSchema],
+    responses={404: {"model": ErrorResponse}, 500: {"model": ErrorResponse}},
+)
+def get_project_risk_score(
+    project_id: int, db: Session = Depends(get_db)
+) -> SuccessResponse[RiskScoreSchema] | JSONResponse:
+    project = db.get(Project, project_id)
+    if project is None:
+        error = ErrorResponse(error="Project not found", status=404)
+        return JSONResponse(status_code=404, content=error.model_dump())
+
+    try:
+        scored = score_project(db, project_id)
+    except Exception:
+        error = ErrorResponse(error="Scoring failed", status=500)
+        return JSONResponse(status_code=500, content=error.model_dump())
+
+    return SuccessResponse(data=RiskScoreSchema.model_validate(scored))

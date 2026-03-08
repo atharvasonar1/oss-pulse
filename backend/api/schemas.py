@@ -21,6 +21,19 @@ class ProjectSchema(BaseModel):
     created_at: datetime
 
 
+class TopFeatureSchema(BaseModel):
+    feature: str
+    shap_value: float
+    direction: str
+
+
+class RiskScoreSchema(BaseModel):
+    score: int
+    top_features: list[TopFeatureSchema]
+    scored_at: datetime
+    project_id: int
+
+
 T = TypeVar("T")
 
 
