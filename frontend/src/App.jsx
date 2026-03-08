@@ -1,10 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import Overview from "./pages/Overview";
-
-function ProjectDetailPlaceholder() {
-  return <div className="mx-auto max-w-6xl p-6 text-sm text-slate-300">Project detail page placeholder.</div>;
-}
+import ProjectDetail from "./pages/ProjectDetail";
 
 export default function App() {
   return (
@@ -28,7 +25,7 @@ export default function App() {
 
         <Routes>
           <Route path="/" element={<Overview />} />
-          <Route path="/project/:owner/:repo" element={<ProjectDetailPlaceholder />} />
+          <Route path="/project/:owner/:repo" element={<ProjectDetail />} />
         </Routes>
       </div>
     </BrowserRouter>
