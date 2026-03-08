@@ -59,7 +59,9 @@ The model monitors seven signals:
 
 ## Demo
 
-> Screenshot to be added before presentation.
+![Overview Dashboard](docs/screenshots/oss-dashboard.png)
+
+![Detail View](docs/screenshots/Card_ss.png)
 
 How to read the dashboard:
 
