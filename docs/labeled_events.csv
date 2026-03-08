@@ -1,0 +1,49 @@
+owner,repo,disruption_start_date,disruption_end_date,disruption_type,label,notes
+hashicorp,terraform,2023-05-03,2023-07-31,license_change,1,Pre-BSL license change debate and governance concerns
+curl,curl,2014-01-09,2014-04-08,security_crisis,1,Signals from OpenSSL dependency risk before Heartbleed disclosure
+log4j,log4j,2021-09-10,2021-12-08,security_crisis,1,Pre-Log4Shell warning signs and response lag concerns
+openssl,openssl,2014-01-08,2014-04-07,security_crisis,1,Pre-Heartbleed maintainer stress and review pressure
+docker,docker,2016-10-03,2017-01-01,maintainer_exodus,1,Contributor churn before Moby split and governance reset
+libressl-portable,libressl,2014-01-15,2014-04-14,fork_event,1,Fork crisis window around OpenSSL trust break
+ansible,ansible,2019-06-01,2019-08-29,community_split,1,Community split signals before collections transition
+kubernetes,kubernetes,2015-01-01,2015-03-31,contributor_concentration,1,Pre-1.0 concentration risk among early maintainers
+struts,struts,2016-12-01,2017-02-28,security_crisis,1,Pre-vulnerability posture concerns before 2017 incident
+nicowillis,colors,2021-10-15,2022-01-13,maintainer_exodus,1,Maintainer sabotage signals before malicious publish
+nicowillis,faker,2021-10-15,2022-01-13,maintainer_exodus,1,Maintainer sabotage signals before malicious publish
+dominictarr,event-stream,2018-08-02,2018-10-31,security_crisis,1,Backdoor injection warning period before disclosure
+zloirock,core-js,2019-11-15,2020-02-12,maintainer_exodus,1,Maintainer burnout crisis and sustainability stress
+babel,babel,2020-03-15,2020-06-13,maintainer_exodus,1,Funding crisis and maintainer overload signals
+left-pad,left-pad,2015-12-03,2016-03-01,community_split,1,Package removal incident and ecosystem shock
+prometheus,prometheus,2018-01-01,2018-03-31,security_crisis,0,Healthy control window no disruption observed
+prometheus,prometheus,2020-04-01,2020-06-29,contributor_concentration,0,Healthy control window no disruption observed
+prometheus,prometheus,2023-01-01,2023-03-31,community_split,0,Healthy control window no disruption observed
+cli,cli,2019-01-01,2019-03-31,maintainer_exodus,0,Healthy control window no disruption observed
+cli,cli,2021-07-01,2021-09-29,license_change,0,Healthy control window no disruption observed
+cli,cli,2024-01-01,2024-03-30,security_crisis,0,Healthy control window no disruption observed
+grafana,grafana,2018-05-01,2018-07-29,community_split,0,Healthy control window no disruption observed
+grafana,grafana,2021-01-01,2021-03-31,security_crisis,0,Healthy control window no disruption observed
+grafana,grafana,2024-04-01,2024-06-29,maintainer_exodus,0,Healthy control window no disruption observed
+ansible,awx,2019-01-15,2019-04-14,contributor_concentration,0,Healthy control window no disruption observed
+ansible,awx,2022-02-01,2022-05-01,community_split,0,Healthy control window no disruption observed
+openshift,okd,2018-09-01,2018-11-29,license_change,0,Healthy control window no disruption observed
+openshift,okd,2021-09-01,2021-11-29,contributor_concentration,0,Healthy control window no disruption observed
+containers,podman,2020-01-01,2020-03-30,security_crisis,0,Healthy control window no disruption observed
+containers,podman,2023-06-01,2023-08-29,maintainer_exodus,0,Healthy control window no disruption observed
+opencontainers,runc,2019-04-01,2019-06-29,security_crisis,0,Healthy control window no disruption observed
+opencontainers,runc,2022-07-01,2022-09-28,community_split,0,Healthy control window no disruption observed
+cri-o,cri-o,2019-08-01,2019-10-29,contributor_concentration,0,Healthy control window no disruption observed
+cri-o,cri-o,2023-02-01,2023-05-01,security_crisis,0,Healthy control window no disruption observed
+torvalds,linux,2018-01-01,2018-03-31,maintainer_exodus,0,Healthy control window no disruption observed
+torvalds,linux,2020-08-01,2020-10-29,community_split,0,Healthy control window no disruption observed
+systemd,systemd,2019-03-01,2019-05-29,license_change,0,Healthy control window no disruption observed
+systemd,systemd,2022-10-01,2022-12-29,security_crisis,0,Healthy control window no disruption observed
+rpm-software-management,rpm,2018-06-01,2018-08-29,maintainer_exodus,0,Healthy control window no disruption observed
+rpm-software-management,rpm,2021-04-01,2021-06-29,community_split,0,Healthy control window no disruption observed
+open-telemetry,opentelemetry-collector,2021-01-01,2021-03-31,contributor_concentration,0,Healthy control window no disruption observed
+open-telemetry,opentelemetry-collector,2024-01-01,2024-03-30,security_crisis,0,Healthy control window no disruption observed
+ovn-org,ovn-kubernetes,2020-02-01,2020-04-30,fork_event,0,Healthy control window no disruption observed
+flannel-io,flannel,2020-05-01,2020-07-29,contributor_concentration,0,Healthy control window no disruption observed
+rook,rook,2021-06-01,2021-08-29,security_crisis,0,Healthy control window no disruption observed
+ceph,ceph,2022-01-01,2022-03-31,maintainer_exodus,0,Healthy control window no disruption observed
+open-policy-agent,opa,2023-03-01,2023-05-29,community_split,0,Healthy control window no disruption observed
+sigstore,cosign,2023-09-01,2023-11-29,security_crisis,0,Healthy control window no disruption observed
