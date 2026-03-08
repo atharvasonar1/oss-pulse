@@ -9,6 +9,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 from sqlalchemy import select
 
 from backend.db.models import Project
+from backend.ml.scorer import score_project
 from backend.pipeline.features import extract_features
 from backend.scrapers.github import GitHubScraper
 from backend.scrapers.news import NewsScraper
@@ -66,7 +67,11 @@ def run_pipeline() -> int:
             except Exception as exc:
                 print(f"Feature extraction failed for {repo_id}: {exc}")
 
-        print("Model inference placeholder — to be wired in PH4")
+            try:
+                result = score_project(session, project.id)
+                print(f"Risk score for {repo_id}: {result['score']}")
+            except Exception as exc:
+                print(f"Risk scoring failed for {repo_id}: {exc}")
 
     ended_at = _utc_now()
     print(f"Pipeline end: {ended_at.isoformat()}")
