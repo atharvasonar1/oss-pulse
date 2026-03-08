@@ -13,6 +13,7 @@ from sqlalchemy.orm import Session
 from backend.api.schemas import ErrorResponse, ProjectSchema, SuccessResponse
 from backend.db.models import Project
 from backend.db.session import get_session
+from backend.pipeline.scheduler import trigger_now
 
 
 app = FastAPI(title="OSS Pulse API", version="0.1.0")
@@ -56,3 +57,9 @@ def get_project(project_id: int, db: Session = Depends(get_db)) -> SuccessRespon
 
     project_payload = ProjectSchema.model_validate(project)
     return SuccessResponse(data=project_payload)
+
+
+@app.post("/pipeline/trigger", response_model=SuccessResponse[dict[str, object]])
+def trigger_pipeline() -> SuccessResponse[dict[str, object]]:
+    projects_processed = trigger_now()
+    return SuccessResponse(data={"message": "Pipeline triggered", "projects_processed": projects_processed})
