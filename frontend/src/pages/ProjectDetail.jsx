@@ -30,6 +30,20 @@ function getOpenIssuesCount(snapshots) {
   return typeof latest?.open_issues === "number" ? latest.open_issues : "N/A";
 }
 
+function getRiskLevel(score) {
+  if (score < 30) return "low";
+  if (score < 60) return "moderate";
+  if (score < 80) return "elevated";
+  return "critical";
+}
+
+function formatScoredAt(value) {
+  if (!value) return "N/A";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "N/A";
+  return date.toLocaleString();
+}
+
 export default function ProjectDetail() {
   const navigate = useNavigate();
   const { owner, repo } = useParams();
@@ -111,6 +125,12 @@ export default function ProjectDetail() {
     [project, snapshots]
   );
 
+  const scoreValue = Number.isFinite(riskScore?.score) ? riskScore.score : 0;
+  const signalsAnalyzed = Array.isArray(riskScore?.top_features) ? riskScore.top_features.length : 0;
+  const healthSummary = `This project shows ${getRiskLevel(
+    scoreValue
+  )} risk based on ${signalsAnalyzed} signals analyzed this week.`;
+
   if (loading) {
     return (
       <main className="mx-auto w-full max-w-7xl p-4 sm:p-6 lg:p-8">
@@ -166,9 +186,14 @@ export default function ProjectDetail() {
         <aside className="space-y-4">
           <section className="rounded-xl border border-border bg-surface p-4">
             <p className="mb-2 text-xs text-slate-400">Current Risk Score</p>
-            <div className="scale-125 origin-left">
-              <ScoreBadge score={riskScore?.score ?? 0} />
+            <div className="mb-2">
+              <ScoreBadge score={scoreValue} variant="ring" />
             </div>
+            <p className="text-[11px] text-slate-400">Last scored: {formatScoredAt(riskScore?.scored_at)}</p>
+          </section>
+
+          <section className="rounded-xl border border-border bg-surface p-4">
+            <p className="text-xs text-slate-300">{healthSummary}</p>
           </section>
 
           <ShapExplainer topFeatures={riskScore?.top_features || []} />

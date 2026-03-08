@@ -13,7 +13,7 @@ function getDeltaText(delta) {
   return delta > 0 ? `+${rounded}` : `${rounded}`;
 }
 
-export default function RiskTable({ projects, riskScores, onSelectProject }) {
+export default function RiskTable({ projects, riskScores, onSelectProject, isLoading = false }) {
   if (projects === null) {
     return (
       <div className="rounded-xl border border-border bg-surface p-4">
@@ -50,9 +50,18 @@ export default function RiskTable({ projects, riskScores, onSelectProject }) {
 
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-surface">
+      <div className="flex items-center justify-between border-b border-border px-4 py-3 text-xs">
+        <span className="text-slate-300">Project Risk Ranking</span>
+        {isLoading ? (
+          <span className="inline-flex items-center gap-2 text-slate-300">
+            <span className="h-3 w-3 animate-spin rounded-full border border-slate-400 border-t-transparent" />
+            Updating scores...
+          </span>
+        ) : null}
+      </div>
       <div className="overflow-x-auto">
         <table className="min-w-full text-left text-xs sm:text-sm">
-          <thead className="bg-white/5 text-slate-300">
+          <thead className="text-slate-300">
             <tr>
               <th className="px-3 py-3">#</th>
               <th className="px-3 py-3">Project</th>
@@ -72,9 +81,21 @@ export default function RiskTable({ projects, riskScores, onSelectProject }) {
                     critical ? "border-l-4 border-l-risk-red" : ""
                   }`}
                   onClick={() => onSelectProject?.(row.project)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      onSelectProject?.(row.project);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
                 >
                   <td className="px-3 py-3 text-slate-400">{index + 1}</td>
-                  <td className="px-3 py-3 font-medium">{`${row.project.owner}/${row.project.repo}`}</td>
+                  <td className="px-3 py-3 font-medium">
+                    <span className="inline-flex items-center gap-2">
+                      {critical ? <span className="h-2 w-2 animate-pulse rounded-full bg-risk-red" /> : null}
+                      <span>{`${row.project.owner}/${row.project.repo}`}</span>
+                    </span>
+                  </td>
                   <td className="px-3 py-3">
                     <ScoreBadge score={row.score} />
                   </td>
