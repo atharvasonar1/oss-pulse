@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 
+import Analyze from "./pages/Analyze";
 import Overview from "./pages/Overview";
 import ProjectDetail from "./pages/ProjectDetail";
 
@@ -31,6 +32,14 @@ export default function App() {
               <div>
                 <p className="text-xs uppercase tracking-[0.2em] text-slate-400">OSS Pulse</p>
                 <h1 className="text-lg font-semibold text-slate-100">Dependency Health Monitor</h1>
+                <nav className="mt-1 flex items-center gap-3 text-xs text-slate-300">
+                  <Link to="/" className="hover:text-slate-100">
+                    Overview
+                  </Link>
+                  <Link to="/analyze" className="hover:text-slate-100">
+                    Analyze
+                  </Link>
+                </nav>
               </div>
             </div>
             <div className="inline-flex items-center gap-2 rounded-full border border-risk-green/40 bg-risk-green/10 px-3 py-1 text-xs text-risk-green">
@@ -43,6 +52,7 @@ export default function App() {
 
         <Routes>
           <Route path="/" element={<Overview />} />
+          <Route path="/analyze" element={<Analyze />} />
           <Route path="/project/:owner/:repo" element={<ProjectDetail />} />
         </Routes>
       </div>
