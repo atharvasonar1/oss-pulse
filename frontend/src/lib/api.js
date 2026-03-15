@@ -95,3 +95,34 @@ export async function fetchSnapshots(projectId) {
 
   return { ok: true, data: buildMockSnapshots(projectId) };
 }
+
+export async function analyzeManifest(file) {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await fetch(`${API_BASE}/analyze`, {
+      method: "POST",
+      body: formData,
+    });
+    const json = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      if (json && typeof json === "object") {
+        return {
+          ok: false,
+          error: json.error || `Request failed (${response.status})`,
+          status: json.status || response.status,
+        };
+      }
+      return { ok: false, error: `Request failed (${response.status})`, status: response.status };
+    }
+
+    if (json && typeof json === "object") {
+      return json;
+    }
+    return { ok: false, error: "Invalid API response", status: 500 };
+  } catch (_error) {
+    return { ok: false, error: "Network error", status: 503 };
+  }
+}
