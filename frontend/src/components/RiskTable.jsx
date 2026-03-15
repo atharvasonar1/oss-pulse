@@ -43,6 +43,7 @@ export default function RiskTable({ projects, riskScores, onSelectProject, isLoa
         score: typeof risk?.score === "number" ? risk.score : 0,
         delta: typeof risk?.week_delta === "number" ? risk.week_delta : 0,
         topSignal: risk?.top_features?.[0]?.feature || "N/A",
+        dependents: typeof project?.dependent_count === "number" ? project.dependent_count : null,
         updatedAt: risk?.scored_at || null,
       };
     })
@@ -68,6 +69,7 @@ export default function RiskTable({ projects, riskScores, onSelectProject, isLoa
               <th className="px-3 py-3">Score</th>
               <th className="px-3 py-3">WoW Delta</th>
               <th className="px-3 py-3">Top Signal</th>
+              <th className="px-3 py-3">Dependents</th>
               <th className="px-3 py-3">Last Updated</th>
             </tr>
           </thead>
@@ -101,6 +103,7 @@ export default function RiskTable({ projects, riskScores, onSelectProject, isLoa
                   </td>
                   <td className="px-3 py-3">{getDeltaText(row.delta)}</td>
                   <td className="px-3 py-3">{row.topSignal}</td>
+                  <td className="px-3 py-3">{row.dependents ?? "N/A"}</td>
                   <td className="px-3 py-3 text-slate-400">{formatTimestamp(row.updatedAt)}</td>
                 </tr>
               );
