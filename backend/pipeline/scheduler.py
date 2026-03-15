@@ -12,6 +12,7 @@ from backend.db.models import Project
 from backend.ml.scorer import score_project
 from backend.pipeline.features import extract_features
 from backend.scrapers.github import GitHubScraper
+from backend.scrapers.libraries import fetch_dependent_count
 from backend.scrapers.news import NewsScraper
 from backend.scrapers.store import store_snapshot
 
@@ -54,6 +55,15 @@ def run_pipeline() -> int:
             except Exception as exc:
                 print(f"Scrape failed for {repo_id}: {exc}")
                 continue
+
+            try:
+                project.dependent_count = fetch_dependent_count(project.owner, project.repo)
+                session.flush()
+                print(f"Dependents fetched for {repo_id}: {project.dependent_count}")
+            except Exception as exc:
+                project.dependent_count = 0
+                session.flush()
+                print(f"Dependents fetch failed for {repo_id}: {exc}")
 
             try:
                 inserted_count = news_scraper.scrape_and_store(session, project.id, project.owner, project.repo)

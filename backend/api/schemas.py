@@ -18,6 +18,7 @@ class ProjectSchema(BaseModel):
     name: str
     description: str | None
     html_url: str
+    dependent_count: int | None
     created_at: datetime
 
 

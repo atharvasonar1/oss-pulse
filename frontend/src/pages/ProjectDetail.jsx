@@ -131,6 +131,7 @@ export default function ProjectDetail() {
       stars: project?.stargazers_count ?? "N/A",
       forks: project?.forks_count ?? "N/A",
       openIssues: getOpenIssuesCount(snapshots),
+      dependents: project?.dependent_count ?? "N/A",
     }),
     [project, snapshots]
   );
@@ -224,6 +225,10 @@ export default function ProjectDetail() {
               <div className="flex items-center justify-between">
                 <dt className="text-slate-400">Open Issues</dt>
                 <dd className="text-slate-200">{metadata.openIssues}</dd>
+              </div>
+              <div className="flex items-center justify-between">
+                <dt className="text-slate-400">Dependents</dt>
+                <dd className="text-slate-200">{metadata.dependents}</dd>
               </div>
             </dl>
           </section>
