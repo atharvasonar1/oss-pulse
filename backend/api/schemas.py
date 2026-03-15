@@ -34,6 +34,11 @@ class RiskScoreSchema(BaseModel):
     project_id: int
 
 
+class RiskHistoryPointSchema(BaseModel):
+    score: int
+    scored_at: datetime
+
+
 T = TypeVar("T")
 
 

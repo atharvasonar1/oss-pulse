@@ -18,10 +18,11 @@ vi.mock("react-router-dom", () => ({
 vi.mock("../../lib/api", () => ({
   fetchProjectByOwnerRepo: vi.fn(),
   fetchRiskScore: vi.fn(),
+  fetchRiskHistory: vi.fn(),
   fetchSnapshots: vi.fn(),
 }));
 
-import { fetchProjectByOwnerRepo, fetchRiskScore, fetchSnapshots } from "../../lib/api";
+import { fetchProjectByOwnerRepo, fetchRiskHistory, fetchRiskScore, fetchSnapshots } from "../../lib/api";
 
 describe("ProjectDetail", () => {
   afterEach(() => {
@@ -42,6 +43,13 @@ describe("ProjectDetail", () => {
         scored_at: "2026-03-09T00:00:00Z",
         top_features: [{ feature: "bus_factor", shap_value: 0.4, direction: "risk" }],
       },
+    });
+    fetchRiskHistory.mockResolvedValue({
+      ok: true,
+      data: [
+        { score: 61, scored_at: "2026-03-01T00:00:00Z" },
+        { score: 73, scored_at: "2026-03-09T00:00:00Z" },
+      ],
     });
     fetchSnapshots.mockResolvedValue({
       ok: true,

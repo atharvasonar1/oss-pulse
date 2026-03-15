@@ -4,9 +4,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import ContributorChart from "../components/ContributorChart";
 import IssueChart from "../components/IssueChart";
 import NewsFeed from "../components/NewsFeed";
+import RiskTrendChart from "../components/RiskTrendChart";
 import ScoreBadge from "../components/ScoreBadge";
 import ShapExplainer from "../components/ShapExplainer";
-import { fetchProjectByOwnerRepo, fetchRiskScore, fetchSnapshots } from "../lib/api";
+import { fetchProjectByOwnerRepo, fetchRiskHistory, fetchRiskScore, fetchSnapshots } from "../lib/api";
 
 function normalizeNewsItems(snapshots) {
   if (!Array.isArray(snapshots)) return [];
@@ -53,6 +54,7 @@ export default function ProjectDetail() {
   const [notFound, setNotFound] = useState(false);
   const [project, setProject] = useState(null);
   const [riskScore, setRiskScore] = useState(null);
+  const [riskHistory, setRiskHistory] = useState(null);
   const [snapshots, setSnapshots] = useState(null);
 
   useEffect(() => {
@@ -64,6 +66,7 @@ export default function ProjectDetail() {
       setNotFound(false);
       setProject(null);
       setRiskScore(null);
+      setRiskHistory(null);
       setSnapshots(null);
 
       const projectResp = await fetchProjectByOwnerRepo(owner, repo);
@@ -83,8 +86,9 @@ export default function ProjectDetail() {
 
       setProject(projectResp.data);
 
-      const [riskResp, snapshotsResp] = await Promise.all([
+      const [riskResp, riskHistoryResp, snapshotsResp] = await Promise.all([
         fetchRiskScore(projectResp.data.id),
+        fetchRiskHistory(projectResp.data.id),
         fetchSnapshots(projectResp.data.id),
       ]);
 
@@ -92,6 +96,12 @@ export default function ProjectDetail() {
 
       if (riskResp.ok) {
         setRiskScore(riskResp.data);
+      }
+
+      if (riskHistoryResp.ok && Array.isArray(riskHistoryResp.data)) {
+        setRiskHistory(riskHistoryResp.data);
+      } else {
+        setRiskHistory([]);
       }
 
       if (snapshotsResp.ok && Array.isArray(snapshotsResp.data)) {
@@ -137,6 +147,7 @@ export default function ProjectDetail() {
         <div className="mb-4 h-8 w-52 animate-pulse rounded bg-white/10" />
         <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
           <div className="space-y-4">
+            <RiskTrendChart history={null} />
             <ContributorChart snapshots={null} />
             <IssueChart snapshots={null} />
           </div>
@@ -178,6 +189,7 @@ export default function ProjectDetail() {
 
       <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
         <div className="space-y-4">
+          <RiskTrendChart history={riskHistory} />
           <ContributorChart snapshots={snapshots} />
           <IssueChart snapshots={snapshots} />
           <NewsFeed items={newsItems} />

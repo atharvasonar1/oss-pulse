@@ -24,12 +24,14 @@ vi.mock("../../lib/api", () => ({
   fetchProjects: vi.fn(),
   fetchRiskScore: vi.fn(),
   fetchProjectByOwnerRepo: vi.fn(),
+  fetchRiskHistory: vi.fn(),
   fetchSnapshots: vi.fn(),
 }));
 
 import {
   fetchProjectByOwnerRepo,
   fetchProjects,
+  fetchRiskHistory,
   fetchRiskScore,
   fetchSnapshots,
 } from "../../lib/api";
@@ -58,6 +60,13 @@ describe("Dashboard polish", () => {
     fetchProjectByOwnerRepo.mockResolvedValue({
       ok: true,
       data: { id: 1, owner: "ansible", repo: "ansible" },
+    });
+    fetchRiskHistory.mockResolvedValue({
+      ok: true,
+      data: [
+        { score: 65, scored_at: "2026-03-02T00:00:00Z" },
+        { score: 73, scored_at: "2026-03-09T00:00:00Z" },
+      ],
     });
     fetchSnapshots.mockResolvedValue({
       ok: true,
