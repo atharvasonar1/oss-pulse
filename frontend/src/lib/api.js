@@ -66,6 +66,10 @@ export async function fetchRiskScore(projectId) {
   return safeFetch(`/projects/${projectId}/risk-score`);
 }
 
+export async function fetchRiskHistory(projectId) {
+  return safeFetch(`/projects/${projectId}/risk-history`);
+}
+
 export async function fetchProjectByOwnerRepo(owner, repo) {
   const projectsResp = await fetchProjects();
   if (!projectsResp.ok) {
