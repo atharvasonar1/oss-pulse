@@ -39,6 +39,19 @@ class RiskHistoryPointSchema(BaseModel):
     scored_at: datetime
 
 
+class ManifestMatchSchema(BaseModel):
+    package: str
+    repo: str
+    owner: str
+    score: int | None
+    top_features: list[str]
+
+
+class AnalyzeResponseSchema(BaseModel):
+    matched: list[ManifestMatchSchema]
+    unmatched: list[str]
+
+
 T = TypeVar("T")
 
 

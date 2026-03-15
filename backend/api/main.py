@@ -3,17 +3,27 @@
 from __future__ import annotations
 
 from collections.abc import Generator
+from difflib import get_close_matches
 
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from backend.api.schemas import ErrorResponse, ProjectSchema, RiskHistoryPointSchema, RiskScoreSchema, SuccessResponse
+from backend.api.schemas import (
+    AnalyzeResponseSchema,
+    ErrorResponse,
+    ManifestMatchSchema,
+    ProjectSchema,
+    RiskHistoryPointSchema,
+    RiskScoreSchema,
+    SuccessResponse,
+)
 from backend.db.models import Project, RiskScore
 from backend.db.session import get_session
 from backend.ml.scorer import score_project
+from backend.parsers.manifest import parse_go_mod, parse_package_json, parse_requirements_txt
 from backend.pipeline.scheduler import trigger_now
 
 
@@ -112,3 +122,73 @@ def get_project_risk_history(
     )
     payload = [RiskHistoryPointSchema(score=row.score, scored_at=row.scored_at) for row in history_rows]
     return SuccessResponse(data=payload)
+
+
+@app.post(
+    "/analyze",
+    response_model=SuccessResponse[AnalyzeResponseSchema],
+    responses={400: {"model": ErrorResponse}, 422: {"model": ErrorResponse}},
+)
+async def analyze_manifest(
+    file: UploadFile = File(...), db: Session = Depends(get_db)
+) -> SuccessResponse[AnalyzeResponseSchema] | JSONResponse:
+    filename = (file.filename or "").lower()
+    if filename.endswith(".txt"):
+        parser = parse_requirements_txt
+    elif filename.endswith(".json"):
+        parser = parse_package_json
+    elif filename.endswith(".mod"):
+        parser = parse_go_mod
+    else:
+        error = ErrorResponse(error="Unsupported file type", status=400)
+        return JSONResponse(status_code=400, content=error.model_dump())
+
+    try:
+        decoded = (await file.read()).decode("utf-8")
+        package_names = parser(decoded)
+    except Exception:
+        error = ErrorResponse(error="Unable to parse manifest file", status=422)
+        return JSONResponse(status_code=422, content=error.model_dump())
+
+    projects = db.execute(select(Project).order_by(Project.id.asc())).scalars().all()
+    repo_lookup = {project.repo.lower(): project for project in projects}
+    repo_names = list(repo_lookup.keys())
+
+    matched: list[ManifestMatchSchema] = []
+    unmatched: list[str] = []
+
+    for package in package_names:
+        closest = get_close_matches(package.lower(), repo_names, n=1, cutoff=0.6)
+        if not closest:
+            unmatched.append(package)
+            continue
+
+        project = repo_lookup[closest[0]]
+        latest_risk = (
+            db.execute(
+                select(RiskScore)
+                .where(RiskScore.project_id == project.id)
+                .order_by(RiskScore.scored_at.desc(), RiskScore.id.desc())
+                .limit(1)
+            )
+            .scalars()
+            .first()
+        )
+
+        top_features: list[str] = []
+        if latest_risk is not None:
+            for value in (latest_risk.top_feature_1, latest_risk.top_feature_2, latest_risk.top_feature_3):
+                if value:
+                    top_features.append(value)
+
+        matched.append(
+            ManifestMatchSchema(
+                package=package,
+                repo=project.repo,
+                owner=project.owner,
+                score=latest_risk.score if latest_risk else None,
+                top_features=top_features,
+            )
+        )
+
+    return SuccessResponse(data=AnalyzeResponseSchema(matched=matched, unmatched=unmatched))
