@@ -10,8 +10,8 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from backend.api.schemas import ErrorResponse, ProjectSchema, RiskScoreSchema, SuccessResponse
-from backend.db.models import Project
+from backend.api.schemas import ErrorResponse, ProjectSchema, RiskHistoryPointSchema, RiskScoreSchema, SuccessResponse
+from backend.db.models import Project, RiskScore
 from backend.db.session import get_session
 from backend.ml.scorer import score_project
 from backend.pipeline.scheduler import trigger_now
@@ -86,3 +86,29 @@ def get_project_risk_score(
         return JSONResponse(status_code=500, content=error.model_dump())
 
     return SuccessResponse(data=RiskScoreSchema.model_validate(scored))
+
+
+@app.get(
+    "/projects/{project_id}/risk-history",
+    response_model=SuccessResponse[list[RiskHistoryPointSchema]],
+    responses={404: {"model": ErrorResponse}},
+)
+def get_project_risk_history(
+    project_id: int, db: Session = Depends(get_db)
+) -> SuccessResponse[list[RiskHistoryPointSchema]] | JSONResponse:
+    project = db.get(Project, project_id)
+    if project is None:
+        error = ErrorResponse(error="Project not found", status=404)
+        return JSONResponse(status_code=404, content=error.model_dump())
+
+    history_rows = (
+        db.execute(
+            select(RiskScore)
+            .where(RiskScore.project_id == project_id)
+            .order_by(RiskScore.scored_at.asc(), RiskScore.id.asc())
+        )
+        .scalars()
+        .all()
+    )
+    payload = [RiskHistoryPointSchema(score=row.score, scored_at=row.scored_at) for row in history_rows]
+    return SuccessResponse(data=payload)
