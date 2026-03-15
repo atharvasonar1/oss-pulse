@@ -27,6 +27,7 @@ class Project(Base):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     html_url: Mapped[str] = mapped_column(Text, nullable=False)
+    dependent_count: Mapped[int | None] = mapped_column(Integer, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
 
     snapshots: Mapped[list[Snapshot]] = relationship(back_populates="project", cascade="all, delete-orphan")
