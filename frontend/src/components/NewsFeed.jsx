@@ -10,18 +10,24 @@ function formatPublished(value) {
   return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 }
 
+function isPlaceholderTitle(title) {
+  const normalized = String(title || "").trim().toLowerCase();
+  return normalized.startsWith("weekly update") && normalized.includes("for project");
+}
+
 export default function NewsFeed({ items }) {
-  const news = Array.isArray(items) ? items.slice(0, 8) : [];
+  const news = Array.isArray(items) ? items : [];
+  const realNews = news.filter((item) => !isPlaceholderTitle(item?.title)).slice(0, 8);
 
   return (
     <section className="rounded-xl border border-border bg-surface p-4">
       <h2 className="mb-3 text-sm font-semibold text-slate-100">Recent News</h2>
 
-      {news.length === 0 ? (
-        <p className="text-xs text-slate-400">No recent news</p>
+      {realNews.length === 0 ? (
+        <p className="text-xs text-slate-400">No recent news articles found for this project</p>
       ) : (
         <ul className="max-h-80 space-y-2 overflow-y-auto pr-1">
-          {news.map((item, index) => {
+          {realNews.map((item, index) => {
             const sentiment = getSentiment(Number(item?.sentiment_score) || 0);
             return (
               <li key={`${item?.url || "item"}-${index}`} className="rounded border border-border bg-white/5 p-3">
