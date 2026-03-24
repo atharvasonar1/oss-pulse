@@ -44,12 +44,14 @@ export default function ContributorChart({ snapshots }) {
     );
   }
 
+  const chartData = snapshots.slice(Math.max(0, snapshots.length - 16));
+
   return (
     <section className="rounded-xl border border-border bg-surface p-4">
       <h2 className="mb-3 text-sm font-semibold text-slate-100">Contributors Over Time</h2>
       <div className="h-64 w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={snapshots}>
+          <AreaChart data={chartData}>
             <CartesianGrid stroke="rgba(148,163,184,0.12)" strokeDasharray="4 4" />
             <XAxis
               dataKey="week"
