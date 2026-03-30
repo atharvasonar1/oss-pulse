@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import numpy as np
@@ -15,6 +15,10 @@ from backend.ml.inference import fallback_heuristic, load_model, predict_with_ex
 
 
 MODEL_PATH = "backend/ml/models/xgb_v1.pkl"
+
+
+def _utc_now() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 def _zero_feature_dict() -> dict[str, float]:
@@ -95,20 +99,43 @@ def score_project(session: Session, project_id: int) -> dict[str, Any]:
     score = max(0, min(100, score))
     top_features = _normalize_top_features(prediction.get("top_features", []))
 
-    scored_at = datetime.now(timezone.utc)
+    scored_at = _utc_now()
+    upsert_window_start = scored_at - timedelta(days=6)
     feature_names = [item["feature"] for item in top_features[:3]]
     while len(feature_names) < 3:
         feature_names.append(None)
 
-    risk_row = RiskScore(
-        project_id=project_id,
-        scored_at=scored_at,
-        score=score,
-        top_feature_1=feature_names[0],
-        top_feature_2=feature_names[1],
-        top_feature_3=feature_names[2],
+    existing_row = (
+        session.execute(
+            select(RiskScore)
+            .where(
+                RiskScore.project_id == project_id,
+                RiskScore.scored_at >= upsert_window_start,
+            )
+            .order_by(RiskScore.scored_at.desc(), RiskScore.id.desc())
+            .limit(1)
+        )
+        .scalars()
+        .first()
     )
-    session.add(risk_row)
+
+    if existing_row is not None:
+        existing_row.score = score
+        existing_row.scored_at = scored_at
+        existing_row.top_feature_1 = feature_names[0]
+        existing_row.top_feature_2 = feature_names[1]
+        existing_row.top_feature_3 = feature_names[2]
+    else:
+        risk_row = RiskScore(
+            project_id=project_id,
+            scored_at=scored_at,
+            score=score,
+            top_feature_1=feature_names[0],
+            top_feature_2=feature_names[1],
+            top_feature_3=feature_names[2],
+        )
+        session.add(risk_row)
+
     session.flush()
 
     return {
