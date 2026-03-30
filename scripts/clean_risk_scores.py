@@ -1,4 +1,4 @@
-"""Cleanup utility for deduplicating risk_scores rows by project."""
+"""Cleanup utility for deduplicating risk_scores rows by project and ISO week."""
 
 from __future__ import annotations
 
@@ -12,37 +12,38 @@ def main() -> None:
     with get_session() as session:
         before_total = session.execute(select(func.count(RiskScore.id))).scalar_one()
 
-        project_ids = session.execute(select(RiskScore.project_id).distinct()).scalars().all()
-        deleted_total = 0
-        touched_projects = 0
+        rows = session.execute(
+            select(RiskScore.id, RiskScore.project_id, RiskScore.scored_at).order_by(
+                RiskScore.project_id.asc(),
+                RiskScore.scored_at.desc(),
+                RiskScore.id.desc(),
+            )
+        ).all()
 
-        for project_id in project_ids:
-            ordered_ids = session.execute(
-                select(RiskScore.id)
-                .where(RiskScore.project_id == project_id)
-                .order_by(RiskScore.scored_at.desc(), RiskScore.id.desc())
-            ).scalars().all()
+        keep_ids: set[int] = set()
+        seen_groups: set[tuple[int, int, int]] = set()
 
-            if len(ordered_ids) <= 1:
+        for score_id, project_id, scored_at in rows:
+            iso = scored_at.isocalendar()
+            group_key = (project_id, iso.year, iso.week)
+            if group_key in seen_groups:
                 continue
 
-            keep_id = ordered_ids[0]
+            seen_groups.add(group_key)
+            keep_ids.add(score_id)
+
+        deleted_total = 0
+        if rows:
             delete_result = session.execute(
-                delete(RiskScore).where(
-                    RiskScore.project_id == project_id,
-                    RiskScore.id != keep_id,
-                )
+                delete(RiskScore).where(RiskScore.id.not_in(keep_ids))
             )
-            deleted_count = int(delete_result.rowcount or 0)
-            deleted_total += deleted_count
-            touched_projects += 1
+            deleted_total = int(delete_result.rowcount or 0)
 
         after_total = session.execute(select(func.count(RiskScore.id))).scalar_one()
 
         print(f"RiskScore rows before: {before_total}")
         print(f"RiskScore rows after: {after_total}")
         print(f"RiskScore rows deleted: {deleted_total}")
-        print(f"Projects deduplicated: {touched_projects}")
 
 
 if __name__ == "__main__":
